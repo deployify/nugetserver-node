@@ -14,7 +14,7 @@ async function init() {
 
 async function getXmlTemplates() {
   try {
-    const templatesDir = join(__dirname, "templates");
+    const templatesDir = join(__dirname, "../", "templates");
 
     xml.errorMeta = (
       await fsHelper.readFile(join(templatesDir, "errormeta.xml"))
