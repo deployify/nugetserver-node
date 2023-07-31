@@ -1,0 +1,46 @@
+<entry xml:base="@baseUrl/" 
+    xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" 
+    xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" 
+    xmlns="http://www.w3.org/2005/Atom">
+    <id>@baseUrl/Packages(Id='@Id',Version='@Version')</id>
+    <title type="text">@Id</title>
+    <summary type="text"></summary>
+    <updated>@LastUpdated</updated>
+    <author>
+        <name>@Authors</name>
+    </author>
+    <link rel="edit-media" title="ODataPackage" href="@baseUrl/Packages(Id='@Id',Version='@Version')/$value" />
+    <link rel="edit" title="ODataPackage" href="Packages(Id='@Id',Version='@Version')" />
+    <category term="NuGet.Server.DataServices.ODataPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="@baseUrl/package/@Id/@Version" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" 
+        xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+        <d:Version>@Version</d:Version>
+        <d:NormalizedVersion>@NormalizedVersion</d:NormalizedVersion>
+        <d:IsPrerelease m:type="Edm.Boolean">@IsPrerelease</d:IsPrerelease>
+        <d:Title>@Title</d:Title>
+        <d:Owners>@Owners</d:Owners>
+        <d:IconUrl>@IconUrl</d:IconUrl>
+        <d:LicenseUrl>@LicenseUrl</d:LicenseUrl>
+        <d:ProjectUrl>@ProjectUrl</d:ProjectUrl>
+        <d:DownloadCount m:type="Edm.Int32">@DownloadCount</d:DownloadCount>
+        <d:RequireLicenseAcceptance m:type="Edm.Boolean">@RequireLicenseAcceptance</d:RequireLicenseAcceptance>
+        <d:DevelopmentDependency m:type="Edm.Boolean">@DevelopmentDependency</d:DevelopmentDependency>
+        <d:Description>@Description</d:Description>
+        <d:ReleaseNotes>@ReleaseNotes</d:ReleaseNotes>
+        <d:Published m:type="Edm.DateTime">@Published</d:Published>
+        <d:Dependencies>@Dependencies</d:Dependencies>
+        <d:PackageHash>@PackageHash</d:PackageHash>
+        <d:PackageHashAlgorithm>@PackageHashAlgorithm</d:PackageHashAlgorithm>
+        <d:PackageSize m:type="Edm.Int64">@PackageSize</d:PackageSize>
+        <d:Copyright>@Copyright</d:Copyright>
+        <d:Tags>@Tags</d:Tags>
+        <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">@IsAbsoluteLatestVersion</d:IsAbsoluteLatestVersion>
+        <d:IsLatestVersion m:type="Edm.Boolean">@IsLatestVersion</d:IsLatestVersion>
+        <d:Listed m:type="Edm.Boolean">@Listed</d:Listed>
+        <d:VersionDownloadCount m:type="Edm.Int32">@DownloadCount</d:VersionDownloadCount>
+        <d:MinClientVersion>@MinClientVersion</d:MinClientVersion>
+        <d:Language>@Language</d:Language>
+        <d:Summary>@Summary</d:Summary>
+    </m:properties>
+</entry>
