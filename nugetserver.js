@@ -75,6 +75,10 @@ module.exports = class {
   setRoutes() {
     this.app.use([`${this.baseRoutev1}*`], async (req, res, next) => {
       try {
+        if (!req.params.key) {
+          return res.status(401).send("Missing key param.");
+        }
+
         const permission = req.params.key === this.key ? permissions.owner : 0;
 
         req.temp = {
@@ -88,7 +92,7 @@ module.exports = class {
         next();
       } catch (err) {
         console.error(err);
-        res.status(500).send();
+        return res.status(401).send();
       }
     });
 
@@ -194,7 +198,7 @@ module.exports = class {
             db.queries.get.packageById
           );
 
-          this.sendPackageResult(req, res, packages, false);
+          this.handlePackagesResult(req, res, packages, false);
         } catch (errorCode) {
           res.status(500).send();
         }
@@ -223,7 +227,7 @@ module.exports = class {
             db.queries.get.packageByIdAndVersion
           );
 
-          this.sendPackageResult(req, res, packages, true);
+          this.handlePackagesResult(req, res, packages, true);
         } catch (errorCode) {
           res.status(errorCode).send();
         }
@@ -250,7 +254,7 @@ module.exports = class {
             packages = await pHelper.getPackages(req.query);
           }
 
-          this.sendPackageResult(req, res, packages, false);
+          this.handlePackagesResult(req, res, packages, false);
         } catch (errorCode) {
           console.log(errorCode);
           res.status(500).send();
@@ -362,20 +366,18 @@ module.exports = class {
     console.log("Checking packages is done.");
   }
 
-  sendPackageResult(req, res, packages, single) {
+  handlePackagesResult(req, res, packages, single) {
     if (
       req.headers.accept &&
       req.headers.accept.indexOf("application/atom+xml") !== -1
     ) {
       res.type("application/atom+xml;charset=utf-8");
-      res
-        .status(200)
-        .send(pHelper.reconstructXml(packages, this.getBaseUrl(req), single));
-    } else {
-      res.type("application/json;charset=utf-8");
-      res
-        .status(200)
-        .send(pHelper.reconstructJson(packages, this.getBaseUrl(req), single));
+      return res.send(
+        pHelper.reconstructXml(packages, this.getBaseUrl(req), single)
+      );
     }
+
+    res.type("application/json;charset=utf-8");
+    res.json(pHelper.reconstructJson(packages, this.getBaseUrl(req), single));
   }
 };
