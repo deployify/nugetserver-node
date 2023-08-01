@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "mdc-nugetserver",
+  "name": "nugetserver-node",
   "version": "1.2.0",
   "description": "",
   "main": "start.js",
