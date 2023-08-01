@@ -11,12 +11,18 @@ app.use(
   })
 );
 
-new NugetServer(app, {
-  rootDir: join(__dirname, "packages"),
-  key: "testing",
+const port = process.env.PORT || 5000;
+const config = {
+  rootDir: join(__dirname, process.env.ROOT_DIR || "packages"),
+  key: process.env.API_KEY || "testing",
+};
+
+new NugetServer(app, config);
+
+app.listen(port, () => {
+  console.log(`API running on port ${port}`);
 });
 
-const port = 5000;
-app.listen(port, function () {
-  console.log(`Express is running on port ${port}`);
+process.on("SIGINT", () => {
+  process.exit(0);
 });
