@@ -11,6 +11,8 @@ app.use(
   })
 );
 
+app.set("trust proxy", true);
+
 const port = process.env.PORT || 5000;
 const config = {
   rootDir: join(__dirname, process.env.ROOT_DIR || "packages"),
