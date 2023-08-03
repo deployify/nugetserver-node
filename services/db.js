@@ -2,32 +2,58 @@ const memDb = [];
 
 const queries = {
   get: {
-    packageByIdAndAbsoluteLatestVersion: ({ Id }) =>
-      memDb.filter((x) => x.Id === Id && x.IsAbsoluteLatestVersion),
+    packagesByProperties: (properties) => {
+      let result = [...memDb];
 
-    versionByIdAndAbsoluteLatestVersion: ({ Id }) =>
+      for (const key in properties) {
+        result = result.filter((x) => x[key] == properties[key]);
+      }
+
+      return result;
+    },
+
+    packagesByIdAndAbsoluteLatestVersion: ({ Id }) =>
+      memDb.filter(
+        (x) =>
+          x.Id.toLowerCase() === Id.toLowerCase() && x.IsAbsoluteLatestVersion
+      ),
+
+    versionsByIdAndAbsoluteLatestVersion: ({ Id }) =>
       memDb
-        .filter((x) => x.Id === Id && x.IsAbsoluteLatestVersion)
+        .filter(
+          (x) =>
+            x.Id.toLowerCase() === Id.toLowerCase() && x.IsAbsoluteLatestVersion
+        )
         .map((x) => x.Version),
 
-    packageByIdAndLatestVersion: ({ Id }) =>
-      memDb.filter((x) => x.Id === Id && x.IsLatestVersion),
+    packagesByIdAndLatestVersion: ({ Id }) =>
+      memDb.filter(
+        (x) => x.Id.toLowerCase() === Id.toLowerCase() && x.IsLatestVersion
+      ),
 
-    versionByIdAndLatestVersion: ({ Id }) =>
+    versionsByIdAndLatestVersion: ({ Id }) =>
       memDb
-        .filter((x) => x.Id === Id && x.IsLatestVersion)
+        .filter(
+          (x) => x.Id.toLowerCase() === Id.toLowerCase() && x.IsLatestVersion
+        )
         .map((x) => x.Version),
 
-    packageByIdAndVersion: ({ Id, Version }) => {
-      Id = Id.toLowerCase();
+    packagesByIdAndVersion: ({ Id, Version }) => {
       return memDb.filter(
-        (x) => x.Listed && x.Version === Version && x.Id.toLowerCase() === Id
+        (x) =>
+          x.Listed &&
+          x.Version === Version &&
+          x.Id.toLowerCase() === Id.toLowerCase()
       );
     },
 
-    packageById: ({ Id }) => memDb.filter((x) => x.Listed && x.Id === Id),
+    packagesByVersion: ({ Version }) => {
+      return memDb.filter((x) => x.Listed && x.Version === Version);
+    },
 
-    packageByPath: ({ path }) =>
+    packagesById: ({ Id }) => memDb.filter((x) => x.Listed && x.Id === Id),
+
+    packagesByPath: ({ path }) =>
       memDb.filter((x) => x.path.toLowerCase() === path.toLowerCase()),
 
     packages: () => memDb,
@@ -109,7 +135,7 @@ const queries = {
 
       return toReturn;
     },
-    packageByIdAndVersion: ({ Id, Version }) => {
+    packagesByIdAndVersion: ({ Id, Version }) => {
       const index = memDb.findIndex(
         (x) => x.Id === Id && x.Version === Version
       );

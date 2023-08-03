@@ -188,29 +188,48 @@ async function createDbPackage(newPackage) {
   }
 }
 
-async function getPackages(query) {
-  let filter = query.$filter;
+async function getPackages(query, id) {
+  const filter = query.$filter || "";
+  const LatestVersion = query.LatestVersion !== undefined;
+  const AbsoluteLatestVersion = query.AbsoluteLatestVersion !== undefined;
 
   // Not implemented
-  let searchTerm = query.searchTerm;
-  let orderby = query.$orderby;
-  let skip = query.$skip;
-  let top = query.$top;
+  const searchTerm = query.searchTerm;
+  const orderby = query.$orderby;
+  const skip = query.$skip;
+  const top = query.$top;
 
   try {
-    const idMatch = filter.match(/'(.*)'/);
-    if (idMatch) {
-      return await db.dbQuery(
-        { Id: id },
-        db.queries.get.packageByIdAndLatestVersion
-      );
+    const versionMatch = filter.match(/Version=\'(.*?)\'/i);
+    const idMatch = filter.match(/Id=\'(.*?)\'/i);
+    const latestVersionMatch = filter.match(/LatestVersion=(true|false)/i);
+    const absoluteLatestVersionMatch = filter.match(
+      /AbsoluteLatestVersion=(true|false)/i
+    );
+
+    const properties = {};
+
+    if (id) {
+      properties.Id = id;
+    } else if (idMatch) {
+      properties.Id = idMatch[1];
     }
 
-    if (filter.IsAbsoluteLatestVersion) {
-      return await db.dbQuery(null, db.queries.get.packagesByLatestVersion);
+    if (versionMatch) {
+      properties.Version = versionMatch[1];
     }
 
-    return await db.dbQuery(null, db.queries.get.packagesByLatestVersion);
+    if (latestVersionMatch || LatestVersion) {
+      properties.IsLatestVersion =
+        LatestVersion || latestVersionMatch[1] === "true";
+    }
+
+    if (absoluteLatestVersionMatch || AbsoluteLatestVersion) {
+      properties.IsAbsoluteLatestVersion =
+        AbsoluteLatestVersion || absoluteLatestVersionMatch[1] === "true";
+    }
+
+    return await db.dbQuery(properties, db.queries.get.packagesByProperties);
   } catch (e) {
     if (filter) console.error(filter);
     console.error(e);
@@ -366,7 +385,7 @@ async function getLatestVersion(id, extraVersionsArray) {
     {
       Id: id,
     },
-    db.queries.get.packageById
+    db.queries.get.packagesById
   );
 
   let versions = dbPackages.map((x) => x.Version);

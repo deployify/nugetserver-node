@@ -151,7 +151,7 @@ module.exports = class {
               Id,
               Version,
             },
-            db.queries.get.packageByIdAndVersion
+            db.queries.get.packagesByIdAndVersion
           );
 
           if (packages.length === 0) {
@@ -185,21 +185,14 @@ module.exports = class {
       },
       async (req, res) => {
         try {
-          const Id = req.query.id.replace(/'/g, "");
-
-          if (!Id) {
+          const idMatch = req.query.id.match(/'(.*?)'/i, "");
+          if (!idMatch || !idMatch[1]) {
             return res.status(400).send("Missing Id param");
           }
 
-          const packages = await db.dbQuery(
-            {
-              Id,
-            },
-            db.queries.get.packageById
-          );
-
+          const packages = await pHelper.getPackages(req.query, idMatch[1]);
           this.handlePackagesResult(req, res, packages, false);
-        } catch (errorCode) {
+        } catch (error) {
           res.status(500).send();
         }
       }
@@ -224,12 +217,12 @@ module.exports = class {
               Id,
               Version,
             },
-            db.queries.get.packageByIdAndVersion
+            db.queries.get.packagesByIdAndVersion
           );
 
           this.handlePackagesResult(req, res, packages, true);
-        } catch (errorCode) {
-          res.status(errorCode).send();
+        } catch (error) {
+          res.status(500).send();
         }
       }
     );
@@ -255,8 +248,8 @@ module.exports = class {
           }
 
           this.handlePackagesResult(req, res, packages, false);
-        } catch (errorCode) {
-          console.log(errorCode);
+        } catch (error) {
+          console.log(error);
           res.status(500).send();
         }
       }
@@ -303,28 +296,6 @@ module.exports = class {
     return `${protocol}://${domain}/${key}/nuget`;
   }
 
-  async checkDeletedPackages() {
-    try {
-      const result = await db.dbQuery({}, db.queries.get.packages);
-
-      for (const p of result) {
-        const exists = await fsHelper.Exist(p.path);
-
-        if (!exists) {
-          await db.dbQuery(
-            {
-              Id: p.Id,
-              Version: p.Version,
-            },
-            db.queries.delete.packageByIdAndVersion
-          );
-        }
-      }
-    } catch (err) {
-      console.error("Could not check for deleted packages:", err);
-    }
-  }
-
   async checkPackages() {
     console.log("Inventorying packages...");
 
@@ -341,7 +312,7 @@ module.exports = class {
               Id: newPackage.Id,
               Version: newPackage.Version,
             },
-            db.queries.get.packageByIdAndVersion
+            db.queries.get.packagesByIdAndVersion
           );
 
           if (existsInDb.length === 0) {
