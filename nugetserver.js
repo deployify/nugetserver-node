@@ -295,14 +295,6 @@ module.exports = class {
     );
   }
 
-  async GetFileContent(file) {
-    try {
-      return await fsHelper.ReadFile(file);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
   getBaseUrl(req) {
     const key = req.params.key;
     const protocol = req.protocol;
