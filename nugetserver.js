@@ -304,9 +304,9 @@ module.exports = class {
   }
 
   getBaseUrl(req) {
-    const key = req.params.key,
-      protocol = "http",
-      domain = req.headers["host"];
+    const key = req.params.key;
+    const protocol = req.protocol;
+    const domain = req.headers["host"];
 
     return `${protocol}://${domain}/${key}/nuget`;
   }
